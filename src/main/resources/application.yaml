@@ -1,3 +1,5 @@
 spring:
   application:
     name: ojikback
+  profiles:
+    default: local
