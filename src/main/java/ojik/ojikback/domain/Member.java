@@ -33,7 +33,6 @@ public class Member {
     private String nickname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "favorite_team_id", nullable = false)
     private Team favoriteTeam;
 
     @Column(name = "created_at", nullable = false)
