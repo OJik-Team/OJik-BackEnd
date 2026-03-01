@@ -46,6 +46,9 @@ public class Attendance {
     @Column(nullable = false, length = 20)
     private AttendanceStatus status;
 
+    @Column(name = "has_diary", nullable = false)
+    private boolean hasDiary;
+
     @Column(name = "certified_at", nullable = false)
     private LocalDateTime certifiedAt;
 
