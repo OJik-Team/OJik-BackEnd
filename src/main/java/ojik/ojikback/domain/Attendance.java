@@ -42,10 +42,6 @@ public class Attendance {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stadium_id", nullable = false)
-    private Stadium stadium;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private AttendanceStatus status;
@@ -53,9 +49,4 @@ public class Attendance {
     @Column(name = "certified_at", nullable = false)
     private LocalDateTime certifiedAt;
 
-    @Column(nullable = false, precision = 10, scale = 7)
-    private BigDecimal latitude;
-
-    @Column(nullable = false, precision = 10, scale = 7)
-    private BigDecimal longitude;
 }
