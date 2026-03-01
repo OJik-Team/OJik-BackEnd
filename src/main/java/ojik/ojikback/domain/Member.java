@@ -36,6 +36,9 @@ public class Member {
     @JoinColumn(name = "favorite_team_id", nullable = false)
     private Team favoriteTeam;
 
+    @Column(name = "profile_image_url", length = 255)
+    private String profileImageUrl;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
