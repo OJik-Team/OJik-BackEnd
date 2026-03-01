@@ -40,9 +40,6 @@ public class Diary {
     @JoinColumn(name = "attendance_id")
     private Attendance attendance;
 
-    @Column(name = "is_certified", nullable = false)
-    private boolean certified;
-
     @Column(name = "game_date", nullable = false)
     private LocalDate gameDate;
 
