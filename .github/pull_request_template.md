@@ -5,10 +5,9 @@
 - Closes #
 
 ## 변경 사항
-- [ ] 도메인 규칙 변경
-- [ ] 유스케이스(application) 변경
-- [ ] 인바운드 어댑터(adapter.in) 변경
-- [ ] 아웃바운드 어댑터(adapter.out) 변경
+- [ ] API 레이어 변경 (`api/controller`, `api/adapter`)
+- [ ] Domain 레이어 변경 (`domain/entity`, `domain/port`, `domain/service`)
+- [ ] Infrastructure 레이어 변경 (`infrastructure/repository`, `infrastructure/client`, `infrastructure/adapter`)
 - [ ] API 스펙/응답 변경
 - [ ] DB 스키마/마이그레이션 변경
 
@@ -27,6 +26,8 @@
 
 ## 체크리스트
 - [ ] 이슈와 브랜치 연결이 올바르다
+- [ ] 의존성 방향 `api -> domain <- infrastructure`를 지켰다
+- [ ] Domain 레이어에 외부 기술 의존(Spring/JPA/HTTP/Redis 등)이 없다
 - [ ] 예외/실패 케이스를 처리했다
 - [ ] 테스트를 추가/갱신했다
 - [ ] 문서가 필요하면 반영했다
