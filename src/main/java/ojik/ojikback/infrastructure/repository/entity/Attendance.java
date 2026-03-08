@@ -1,4 +1,4 @@
-package ojik.ojikback.domain;
+package ojik.ojikback.infrastructure.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ojik.ojikback.domain.enums.AttendanceStatus;
+import ojik.ojikback.infrastructure.repository.entity.enums.AttendanceStatus;
 
 @Entity
 @Table(

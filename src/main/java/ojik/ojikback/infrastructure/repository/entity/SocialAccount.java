@@ -1,4 +1,4 @@
-package ojik.ojikback.domain;
+package ojik.ojikback.infrastructure.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,46 +11,39 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ojik.ojikback.domain.enums.GameStatus;
+import ojik.ojikback.infrastructure.repository.entity.enums.SocialProvider;
 
 @Entity
-@Table(name = "games")
+@Table(
+        name = "social_accounts",
+        uniqueConstraints = @UniqueConstraint(name = "uk_social_provider_user", columnNames = {"provider", "provider_user_id"})
+)
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game {
+public class SocialAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "game_date", nullable = false)
-    private LocalDate gameDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "home_team_id", nullable = false)
-    private Team homeTeam;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "away_team_id", nullable = false)
-    private Team awayTeam;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stadium_id", nullable = false)
-    private Stadium stadium;
-
-    @Column(name = "home_score")
-    private Integer homeScore;
-
-    @Column(name = "away_score")
-    private Integer awayScore;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private GameStatus status;
+    private SocialProvider provider;
+
+    @Column(name = "provider_user_id", nullable = false, length = 50)
+    private String providerUserId;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 }
