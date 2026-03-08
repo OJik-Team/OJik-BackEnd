@@ -1,4 +1,4 @@
-package ojik.ojikback.domain;
+package ojik.ojikback.infrastructure.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
