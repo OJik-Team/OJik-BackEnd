@@ -16,3 +16,8 @@ social:
     redirect-uri: ${KAKAO_REDIRECT_URI}
     token-uri: https://kauth.kakao.com/oauth/token
     user-info-uri: https://kapi.kakao.com/v2/user/me
+
+auth:
+  signup-token:
+    secret-key: ${SIGNUP_TOKEN_SECRET_KEY}
+    expiration: ${SIGNUP_TOKEN_EXPIRATION:15m}
