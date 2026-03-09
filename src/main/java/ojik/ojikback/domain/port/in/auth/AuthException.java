@@ -8,6 +8,11 @@ public class AuthException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public AuthException(AuthErrorCode errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+
     public AuthErrorCode getErrorCode() {
         return errorCode;
     }
