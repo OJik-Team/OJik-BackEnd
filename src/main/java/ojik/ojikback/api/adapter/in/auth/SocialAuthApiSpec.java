@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import ojik.ojikback.api.adapter.in.auth.dto.SocialLoginRequest;
 import ojik.ojikback.api.adapter.in.auth.dto.SocialSignupRequest;
 import ojik.ojikback.api.adapter.out.auth.dto.SocialLoginResponseData;
@@ -32,10 +33,15 @@ public interface SocialAuthApiSpec {
                     responseCode = "401",
                     description = "SOCIAL_AUTH_FAILED",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "INVALID_REQUEST",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
     @PostMapping("/login")
-    ApiResponse<SocialLoginResponseData> login(@RequestBody SocialLoginRequest request);
+    ApiResponse<SocialLoginResponseData> login(@Valid @RequestBody SocialLoginRequest request);
 
     @Operation(
             summary = "소셜 회원가입 완료",
@@ -52,8 +58,13 @@ public interface SocialAuthApiSpec {
                     responseCode = "409",
                     description = "DUPLICATE_NICKNAME or DUPLICATE_SOCIAL_ACCOUNT",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "INVALID_REQUEST",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
     @PostMapping("/signup")
-    ApiResponse<SocialSignupResponseData> signup(@RequestBody SocialSignupRequest request);
+    ApiResponse<SocialSignupResponseData> signup(@Valid @RequestBody SocialSignupRequest request);
 }
