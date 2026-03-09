@@ -14,8 +14,10 @@ import ojik.ojikback.infrastructure.repository.SpringDataMemberRepository;
 import ojik.ojikback.infrastructure.repository.SpringDataSocialAccountRepository;
 import ojik.ojikback.infrastructure.repository.SpringDataTeamRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class AuthPersistenceAdapter implements
         SocialAccountReader,
         TeamReader,
@@ -59,14 +61,20 @@ public class AuthPersistenceAdapter implements
     }
 
     @Override
+    @Transactional
     public Member save(Member member) {
-        ojik.ojikback.infrastructure.repository.entity.Team favoriteTeam = teamRepository.getReferenceById(member.getFavoriteTeam().getId());
+        ojik.ojikback.infrastructure.repository.entity.Team favoriteTeam = teamRepository.findById(member.getFavoriteTeam().getId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 팀입니다: " + member.getFavoriteTeam().getId()));
+
         return mapper.toDomainMember(memberRepository.save(mapper.toEntityMember(member, favoriteTeam)));
     }
 
     @Override
+    @Transactional
     public SocialAccount save(SocialAccount socialAccount) {
-        ojik.ojikback.infrastructure.repository.entity.Member member = memberRepository.getReferenceById(socialAccount.getMember().getId());
+        ojik.ojikback.infrastructure.repository.entity.Member member = memberRepository.findById(socialAccount.getMember().getId())
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다: " + socialAccount.getMember().getId()));
+
         return mapper.toDomainSocialAccount(socialAccountRepository.save(mapper.toEntitySocialAccount(socialAccount, member)));
     }
 }
