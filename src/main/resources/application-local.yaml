@@ -21,6 +21,10 @@ social:
     user-info-uri: https://kapi.kakao.com/v2/user/me
 
 auth:
+  jwt:
+    secret-key: ${AUTH_JWT_SECRET_KEY}
+    access-expiration: ${AUTH_JWT_ACCESS_EXPIRATION:1h}
+    refresh-expiration: ${AUTH_JWT_REFRESH_EXPIRATION:14d}
   signup-token:
     secret-key: ${SIGNUP_TOKEN_SECRET_KEY}
     expiration: ${SIGNUP_TOKEN_EXPIRATION:15m}

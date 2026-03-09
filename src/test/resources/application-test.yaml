@@ -1,4 +1,8 @@
 auth:
+  jwt:
+    secret-key: test-auth-jwt-secret-key-must-be-at-least-32bytes
+    access-expiration: 1h
+    refresh-expiration: 14d
   signup-token:
     secret-key: test-signup-token-secret-key-must-be-at-least-32bytes
     expiration: 15m

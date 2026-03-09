@@ -14,6 +14,12 @@ public class Team {
         return team;
     }
 
+    public static Team restore(Long id, String name, String shortName, String themeColor) {
+        Team team = create(name, shortName, themeColor);
+        team.id = id;
+        return team;
+    }
+
     public Long getId() {
         return id;
     }

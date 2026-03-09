@@ -24,6 +24,26 @@ public class Member {
         return member;
     }
 
+    public static Member restore(
+            Long id,
+            String nickname,
+            Team favoriteTeam,
+            String profileImageUrl,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            LocalDateTime deletedAt
+    ) {
+        Member member = new Member();
+        member.id = id;
+        member.nickname = nickname;
+        member.favoriteTeam = favoriteTeam;
+        member.profileImageUrl = profileImageUrl;
+        member.createdAt = createdAt;
+        member.updatedAt = updatedAt;
+        member.deletedAt = deletedAt;
+        return member;
+    }
+
     public Long getId() {
         return id;
     }
