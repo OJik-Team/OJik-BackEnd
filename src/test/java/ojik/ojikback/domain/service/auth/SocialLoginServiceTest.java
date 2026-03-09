@@ -99,7 +99,7 @@ class SocialLoginServiceTest {
     }
 
     private Member member(Long memberId, String nickname, Long favoriteTeamId) {
-        Team team = Team.create("LG Twins", "LG", "#000000");
+        Team team = Team.create("LG Twins");
         ReflectionTestUtils.setField(team, "id", favoriteTeamId);
 
         Member member = Member.create(nickname, team, null, FIXED_DATE_TIME);

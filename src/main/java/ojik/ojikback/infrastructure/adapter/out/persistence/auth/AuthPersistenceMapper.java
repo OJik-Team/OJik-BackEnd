@@ -8,9 +8,7 @@ public class AuthPersistenceMapper {
     public ojik.ojikback.domain.entity.Team toDomainTeam(ojik.ojikback.infrastructure.repository.entity.Team entity) {
         return ojik.ojikback.domain.entity.Team.restore(
                 entity.getId(),
-                entity.getName(),
-                entity.getShortName(),
-                entity.getThemeColor()
+                entity.getName()
         );
     }
 

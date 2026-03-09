@@ -146,7 +146,7 @@ class SocialSignupServiceTest {
     }
 
     private Team team(Long teamId) {
-        Team team = Team.create("LG Twins", "LG", "#000000");
+        Team team = Team.create("LG Twins");
         ReflectionTestUtils.setField(team, "id", teamId);
         return team;
     }
