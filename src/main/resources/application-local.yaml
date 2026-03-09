@@ -14,13 +14,13 @@ spring:
 
 social:
   kakao:
-    client-id: ${KAKAO_CLIENT_ID:}
-    client-secret: ${KAKAO_CLIENT_SECRET:}
-    redirect-uri: ${KAKAO_REDIRECT_URI:}
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
     token-uri: https://kauth.kakao.com/oauth/token
     user-info-uri: https://kapi.kakao.com/v2/user/me
 
 auth:
   signup-token:
-    secret-key: ${SIGNUP_TOKEN_SECRET_KEY:local-signup-token-secret-key-must-be-at-least-32-bytes}
+    secret-key: ${SIGNUP_TOKEN_SECRET_KEY}
     expiration: ${SIGNUP_TOKEN_EXPIRATION:15m}
