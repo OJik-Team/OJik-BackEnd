@@ -6,10 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.Date;
+import java.time.LocalDateTime;
 import ojik.ojikback.domain.entity.enums.SocialProvider;
 import ojik.ojikback.domain.port.in.auth.AuthErrorCode;
 import ojik.ojikback.domain.port.in.auth.AuthException;
@@ -26,32 +23,34 @@ class JwtSignupSessionProviderTest {
     @DisplayName("signupToken을 발급하고 다시 조회할 수 있다")
     void createAndGetSuccess() {
         // given
-        Instant now = Instant.parse("2026-03-09T12:00:00Z");
-        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties(), fixedClock(now));
+        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties());
         SocialUserInfo userInfo = new SocialUserInfo(SocialProvider.KAKAO, "123456");
+        LocalDateTime before = LocalDateTime.now().minusSeconds(1);
 
         // when
         String token = provider.create(userInfo);
         SignupSession session = provider.get(token);
+        LocalDateTime after = LocalDateTime.now().plusSeconds(1);
 
         // then
         assertThat(session.provider()).isEqualTo(SocialProvider.KAKAO);
         assertThat(session.providerUserId()).isEqualTo("123456");
-        assertThat(session.issuedAt()).isEqualTo(now);
-        assertThat(session.expiresAt()).isEqualTo(now.plusSeconds(900));
+        assertThat(session.issuedAt()).isAfterOrEqualTo(before);
+        assertThat(session.issuedAt()).isBeforeOrEqualTo(after);
+        assertThat(session.expiresAt()).isEqualTo(session.issuedAt().plusMinutes(15));
     }
 
     @Test
     @DisplayName("만료된 signupToken은 SIGNUP_TOKEN_EXPIRED 예외를 던진다")
     void getFailWhenExpired() {
         // given
-        Instant now = Instant.parse("2026-03-09T12:00:00Z");
-        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties(), fixedClock(now.plusSeconds(901)));
+        LocalDateTime now = LocalDateTime.now().minusMinutes(16);
+        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties());
         String expiredToken = Jwts.builder()
                 .claim("provider", SocialProvider.KAKAO.name())
                 .claim("providerUserId", "123456")
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(900)))
+                .issuedAt(java.sql.Timestamp.valueOf(now))
+                .expiration(java.sql.Timestamp.valueOf(now.plusMinutes(15)))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .compact();
 
@@ -66,13 +65,13 @@ class JwtSignupSessionProviderTest {
     @DisplayName("변조된 signupToken은 INVALID_SIGNUP_TOKEN 예외를 던진다")
     void getFailWhenTokenTampered() {
         // given
-        Instant now = Instant.parse("2026-03-09T12:00:00Z");
-        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties(), fixedClock(now));
+        LocalDateTime now = LocalDateTime.now();
+        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties());
         String tamperedToken = Jwts.builder()
                 .claim("provider", SocialProvider.KAKAO.name())
                 .claim("providerUserId", "123456")
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(900)))
+                .issuedAt(java.sql.Timestamp.valueOf(now))
+                .expiration(java.sql.Timestamp.valueOf(now.plusMinutes(15)))
                 .signWith(Keys.hmacShaKeyFor("different-signup-token-secret-key-12345".getBytes(StandardCharsets.UTF_8)))
                 .compact();
 
@@ -87,12 +86,12 @@ class JwtSignupSessionProviderTest {
     @DisplayName("providerUserId 클레임이 없으면 INVALID_SIGNUP_TOKEN 예외를 던진다")
     void getFailWhenProviderUserIdMissing() {
         // given
-        Instant now = Instant.parse("2026-03-09T12:00:00Z");
-        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties(), fixedClock(now));
+        LocalDateTime now = LocalDateTime.now();
+        JwtSignupSessionProvider provider = new JwtSignupSessionProvider(properties());
         String token = Jwts.builder()
                 .claim("provider", SocialProvider.KAKAO.name())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(900)))
+                .issuedAt(java.sql.Timestamp.valueOf(now))
+                .expiration(java.sql.Timestamp.valueOf(now.plusMinutes(15)))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .compact();
 
@@ -108,9 +107,5 @@ class JwtSignupSessionProviderTest {
         properties.setSecretKey(SECRET_KEY);
         properties.setExpiration(java.time.Duration.ofMinutes(15));
         return properties;
-    }
-
-    private Clock fixedClock(Instant now) {
-        return Clock.fixed(now, ZoneOffset.UTC);
     }
 }

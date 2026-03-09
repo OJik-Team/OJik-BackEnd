@@ -6,9 +6,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import ojik.ojikback.domain.entity.enums.SocialProvider;
@@ -27,25 +27,23 @@ public class JwtSignupSessionProvider implements SignupSessionProvider {
     private static final String PROVIDER_USER_ID_CLAIM = "providerUserId";
 
     private final SecretKey secretKey;
-    private final Clock clock;
     private final Duration expiration;
 
-    public JwtSignupSessionProvider(SignupTokenProperties properties, Clock clock) {
-        this.clock = clock;
+    public JwtSignupSessionProvider(SignupTokenProperties properties) {
         this.secretKey = Keys.hmacShaKeyFor(validateSecretKey(properties).getBytes(StandardCharsets.UTF_8));
         this.expiration = properties.getExpiration();
     }
 
     @Override
     public String create(SocialUserInfo userInfo) {
-        Instant issuedAt = Instant.now(clock);
-        Instant expiresAt = issuedAt.plus(expiration);
+        LocalDateTime issuedAt = LocalDateTime.now();
+        LocalDateTime expiresAt = issuedAt.plus(expiration);
 
         return Jwts.builder()
                 .claim(PROVIDER_CLAIM, userInfo.provider().name())
                 .claim(PROVIDER_USER_ID_CLAIM, userInfo.providerUserId())
-                .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiresAt))
+                .issuedAt(toDate(issuedAt))
+                .expiration(toDate(expiresAt))
                 .signWith(secretKey)
                 .compact();
     }
@@ -55,7 +53,7 @@ public class JwtSignupSessionProvider implements SignupSessionProvider {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
-                    .clock(() -> Date.from(Instant.now(clock)))
+                    .clock(() -> toDate(LocalDateTime.now()))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -63,8 +61,8 @@ public class JwtSignupSessionProvider implements SignupSessionProvider {
             return new SignupSession(
                     parseProvider(claims.get(PROVIDER_CLAIM, String.class)),
                     parseProviderUserId(claims.get(PROVIDER_USER_ID_CLAIM, String.class)),
-                    claims.getIssuedAt().toInstant(),
-                    claims.getExpiration().toInstant()
+                    toLocalDateTime(claims.getIssuedAt()),
+                    toLocalDateTime(claims.getExpiration())
             );
         } catch (ExpiredJwtException e) {
             throw new AuthException(AuthErrorCode.SIGNUP_TOKEN_EXPIRED, "signupToken이 만료되었습니다.", e);
@@ -104,5 +102,13 @@ public class JwtSignupSessionProvider implements SignupSessionProvider {
             throw new AuthException(AuthErrorCode.INVALID_SIGNUP_TOKEN, "providerUserId 클레임이 없습니다.");
         }
         return providerUserId;
+    }
+
+    private Date toDate(LocalDateTime dateTime) {
+        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private LocalDateTime toLocalDateTime(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

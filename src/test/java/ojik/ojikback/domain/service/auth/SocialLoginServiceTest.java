@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class SocialLoginServiceTest {
+    private static final java.time.LocalDateTime FIXED_DATE_TIME = java.time.LocalDateTime.of(2026, 3, 9, 12, 0, 0);
 
     @Test
     @DisplayName("기존 회원이면 JWT를 발급하고 회원 정보를 반환한다")
@@ -101,13 +102,13 @@ class SocialLoginServiceTest {
         Team team = Team.create("LG Twins", "LG", "#000000");
         ReflectionTestUtils.setField(team, "id", favoriteTeamId);
 
-        Member member = Member.create(nickname, team, null, java.time.LocalDateTime.now());
+        Member member = Member.create(nickname, team, null, FIXED_DATE_TIME);
         ReflectionTestUtils.setField(member, "id", memberId);
         return member;
     }
 
     private SocialAccount socialAccount(Member member, SocialProvider provider, String providerUserId) {
-        SocialAccount socialAccount = SocialAccount.create(member, provider, providerUserId, java.time.LocalDateTime.now());
+        SocialAccount socialAccount = SocialAccount.create(member, provider, providerUserId, FIXED_DATE_TIME);
         ReflectionTestUtils.setField(socialAccount, "id", 10L);
         return socialAccount;
     }

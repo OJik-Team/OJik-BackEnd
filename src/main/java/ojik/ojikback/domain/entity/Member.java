@@ -55,4 +55,8 @@ public class Member {
     public List<SocialAccount> getSocialAccounts() {
         return socialAccounts;
     }
+
+    public void linkSocialAccount(SocialAccount socialAccount) {
+        socialAccounts.add(socialAccount);
+    }
 }
