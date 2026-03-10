@@ -3,6 +3,7 @@ package ojik.ojikback.api.adapter.in.auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import ojik.ojikback.api.adapter.in.auth.dto.SocialLoginRequest;
@@ -40,6 +41,7 @@ public interface SocialAuthApiSpec {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
+    @SecurityRequirements
     @PostMapping("/login")
     ApiResponse<SocialLoginResponseData> login(@Valid @RequestBody SocialLoginRequest request);
 
@@ -65,6 +67,7 @@ public interface SocialAuthApiSpec {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
+    @SecurityRequirements
     @PostMapping("/signup")
     ApiResponse<SocialSignupResponseData> signup(@Valid @RequestBody SocialSignupRequest request);
 }
