@@ -4,24 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ojik.ojikback.domain.entity.enums.SocialProvider;
 import ojik.ojikback.domain.port.in.auth.AuthErrorCode;
 import ojik.ojikback.domain.port.in.auth.AuthException;
-import ojik.ojikback.domain.port.out.auth.SocialAuthClient;
-import ojik.ojikback.domain.port.out.auth.model.SocialUserInfo;
 import ojik.ojikback.infrastructure.adapter.in.config.SocialNaverProperties;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class NaverSocialAuthClient implements SocialAuthClient {
-
-    private final RestClient restClient;
+public class NaverSocialAuthClient extends AbstractOAuthSocialAuthClient<NaverSocialAuthClient.UserInfoResponse> {
     private final SocialNaverProperties properties;
 
     public NaverSocialAuthClient(RestClient.Builder restClientBuilder, SocialNaverProperties properties) {
-        this.restClient = restClientBuilder.build();
+        super(restClientBuilder);
         this.properties = properties;
     }
 
@@ -31,21 +25,22 @@ public class NaverSocialAuthClient implements SocialAuthClient {
     }
 
     @Override
-    public SocialUserInfo fetchUserInfo(String authCode) {
-        try {
-            String accessToken = requestAccessToken(authCode);
-            String providerUserId = requestProviderUserId(accessToken);
-            return new SocialUserInfo(SocialProvider.NAVER, providerUserId);
-        } catch (AuthException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED, "네이버 인증에 실패했습니다.", e);
-        }
+    protected String providerName() {
+        return "네이버";
     }
 
-    private String requestAccessToken(String authCode) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "authorization_code");
+    @Override
+    protected String tokenUri() {
+        return properties.getTokenUri();
+    }
+
+    @Override
+    protected String userInfoUri() {
+        return properties.getUserInfoUri();
+    }
+
+    @Override
+    protected void addTokenRequestParameters(MultiValueMap<String, String> form, String authCode) {
         form.add("client_id", properties.getClientId());
         form.add("client_secret", properties.getClientSecret());
         form.add("redirect_uri", properties.getRedirectUri());
@@ -54,27 +49,15 @@ public class NaverSocialAuthClient implements SocialAuthClient {
         if (StringUtils.hasText(properties.getState())) {
             form.add("state", properties.getState());
         }
-
-        TokenResponse tokenResponse = restClient.post()
-                .uri(properties.getTokenUri())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(form)
-                .retrieve()
-                .body(TokenResponse.class);
-
-        if (tokenResponse == null || !StringUtils.hasText(tokenResponse.accessToken())) {
-            throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED, "네이버 토큰 응답이 올바르지 않습니다.");
-        }
-        return tokenResponse.accessToken();
     }
 
-    private String requestProviderUserId(String accessToken) {
-        UserInfoResponse userInfoResponse = restClient.get()
-                .uri(properties.getUserInfoUri())
-                .header("Authorization", "Bearer " + accessToken)
-                .retrieve()
-                .body(UserInfoResponse.class);
+    @Override
+    protected Class<UserInfoResponse> userInfoResponseType() {
+        return UserInfoResponse.class;
+    }
 
+    @Override
+    protected String extractProviderUserId(UserInfoResponse userInfoResponse) {
         if (userInfoResponse == null
                 || userInfoResponse.response() == null
                 || !StringUtils.hasText(userInfoResponse.response().id())) {
@@ -83,19 +66,14 @@ public class NaverSocialAuthClient implements SocialAuthClient {
         return userInfoResponse.response().id();
     }
 
-    private record TokenResponse(
-            @JsonProperty("access_token") String accessToken
-    ) {
-    }
-
-    private record UserInfoResponse(
+    protected record UserInfoResponse(
             @JsonProperty("resultcode") String resultCode,
             @JsonProperty("message") String message,
             @JsonProperty("response") UserInfoData response
     ) {
     }
 
-    private record UserInfoData(
+    protected record UserInfoData(
             @JsonProperty("id") String id
     ) {
     }
