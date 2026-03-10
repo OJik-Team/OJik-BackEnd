@@ -44,7 +44,7 @@ public class AuthPersistenceAdapter implements
 
     @Override
     public Optional<SocialAccount> findByProviderAndProviderUserId(SocialProvider provider, String providerUserId) {
-        return socialAccountRepository.findByProviderAndProviderUserId(
+        return socialAccountRepository.findByProviderAndProviderUserIdAndMemberDeletedAtIsNull(
                 ojik.ojikback.infrastructure.repository.entity.enums.SocialProvider.valueOf(provider.name()),
                 providerUserId
         ).map(mapper::toDomainSocialAccount);
@@ -57,7 +57,7 @@ public class AuthPersistenceAdapter implements
 
     @Override
     public boolean existsByNickname(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+        return memberRepository.existsByNicknameAndDeletedAtIsNull(nickname);
     }
 
     @Override

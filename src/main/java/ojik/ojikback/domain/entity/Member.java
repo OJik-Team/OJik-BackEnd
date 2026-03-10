@@ -79,4 +79,13 @@ public class Member {
     public void linkSocialAccount(SocialAccount socialAccount) {
         socialAccounts.add(socialAccount);
     }
+
+    public void withdraw(LocalDateTime now) {
+        if (deletedAt != null) {
+            throw new IllegalStateException("이미 탈퇴한 회원입니다.");
+        }
+
+        deletedAt = now;
+        updatedAt = now;
+    }
 }

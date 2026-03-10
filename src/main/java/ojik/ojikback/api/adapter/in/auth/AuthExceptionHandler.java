@@ -45,7 +45,7 @@ public class AuthExceptionHandler {
         return switch (errorCode) {
             case INVALID_PROVIDER -> HttpStatus.BAD_REQUEST;
             case SOCIAL_AUTH_FAILED, INVALID_SIGNUP_TOKEN, SIGNUP_TOKEN_EXPIRED -> HttpStatus.UNAUTHORIZED;
-            case TEAM_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case TEAM_NOT_FOUND, MEMBER_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case DUPLICATE_NICKNAME, DUPLICATE_SOCIAL_ACCOUNT -> HttpStatus.CONFLICT;
         };
     }

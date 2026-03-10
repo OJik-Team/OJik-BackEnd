@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpringDataSocialAccountRepository extends JpaRepository<SocialAccount, Long> {
     @EntityGraph(attributePaths = {"member", "member.favoriteTeam"})
-    Optional<SocialAccount> findByProviderAndProviderUserId(SocialProvider provider, String providerUserId);
+    Optional<SocialAccount> findByProviderAndProviderUserIdAndMemberDeletedAtIsNull(SocialProvider provider, String providerUserId);
+
+    void deleteByMember_Id(Long memberId);
 }
