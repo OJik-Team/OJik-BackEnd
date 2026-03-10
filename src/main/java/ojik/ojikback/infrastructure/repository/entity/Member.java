@@ -50,4 +50,22 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<SocialAccount> socialAccounts = new ArrayList<>();
+
+    public static Member create(
+            String nickname,
+            Team favoriteTeam,
+            String profileImageUrl,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            LocalDateTime deletedAt
+    ) {
+        Member member = new Member();
+        member.nickname = nickname;
+        member.favoriteTeam = favoriteTeam;
+        member.profileImageUrl = profileImageUrl;
+        member.createdAt = createdAt;
+        member.updatedAt = updatedAt;
+        member.deletedAt = deletedAt;
+        return member;
+    }
 }

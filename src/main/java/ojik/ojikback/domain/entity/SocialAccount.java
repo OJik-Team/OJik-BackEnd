@@ -19,6 +19,18 @@ public class SocialAccount {
         return socialAccount;
     }
 
+    public static SocialAccount restore(
+            Long id,
+            Member member,
+            SocialProvider provider,
+            String providerUserId,
+            LocalDateTime createdAt
+    ) {
+        SocialAccount socialAccount = create(member, provider, providerUserId, createdAt);
+        socialAccount.id = id;
+        return socialAccount;
+    }
+
     public Long getId() {
         return id;
     }

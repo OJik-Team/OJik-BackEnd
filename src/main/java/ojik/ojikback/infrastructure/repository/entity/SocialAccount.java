@@ -46,4 +46,13 @@ public class SocialAccount {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    public static SocialAccount create(Member member, SocialProvider provider, String providerUserId, LocalDateTime createdAt) {
+        SocialAccount socialAccount = new SocialAccount();
+        socialAccount.member = member;
+        socialAccount.provider = provider;
+        socialAccount.providerUserId = providerUserId;
+        socialAccount.createdAt = createdAt;
+        return socialAccount;
+    }
 }

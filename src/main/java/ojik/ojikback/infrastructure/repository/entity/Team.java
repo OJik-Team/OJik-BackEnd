@@ -24,10 +24,4 @@ public class Team {
 
     @Column(nullable = false, length = 50)
     private String name;
-
-    @Column(name = "short_name", nullable = false, length = 50)
-    private String shortName;
-
-    @Column(name = "theme_color", nullable = false, length = 50)
-    private String themeColor;
 }
